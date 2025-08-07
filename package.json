@@ -5,12 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-  "build": "react-scripts build",
+    "build": "react-scripts build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "react-scripts start",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "preinstall": "npx npm-force-resolutions"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "react-pageflip": "^2.0.3",
     "react-pdf": "^10.0.1",
     "react-router-dom": "^7.7.1",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.5"
   },
   "resolutions": {
