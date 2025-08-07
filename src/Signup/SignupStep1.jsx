@@ -11,7 +11,7 @@ const SignupStep1 = ({ onNext }) => {
   const sendOtp = async () => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/send-signup-otp", { email });
+      await axios.post("https://students-app-production.up.railway.app/api/auth/send-signup-otp", { email });
       toast.success("OTP sent to your email");
       onNext(email);
     } catch (err) {

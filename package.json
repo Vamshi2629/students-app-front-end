@@ -43,6 +43,6 @@
     "npm-force-resolutions": "^0.0.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.3.2",
-    "vite": "^7.0.4"
+    "vite": "^7.1.0"
   }
 }

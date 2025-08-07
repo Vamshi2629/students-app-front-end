@@ -15,8 +15,8 @@ const TopbarWithMenu = () => {
     { path: "/home", label: "Home", icon: <FaHome /> },
     { path: "/students-create", label: "Students Create", icon: <FaUserGraduate /> },
     { path: "/students", label: "Students", icon: <FaUser /> },
-     { path: "/subjects", label: "Subjects", icon: <FaUser size={20} /> },
-    { path: "/book/:id", label: "book", icon: <FaUser size={20} /> },
+     { path: "/books", label: "Books", icon: <FaUser size={20} /> },
+    // { path: "/book/:id", label: "book", icon: <FaUser size={20} /> },
   ];
 
   return (

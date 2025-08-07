@@ -14,7 +14,7 @@ const SignupStep2 = ({ email }) => {
   const signup = async () => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", {
+      await axios.post("https://students-app-production.up.railway.app/api/auth/signup", {
         name,
         email,
         password,

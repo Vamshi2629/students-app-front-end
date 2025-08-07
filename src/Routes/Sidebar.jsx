@@ -13,8 +13,8 @@ const Sidebar = () => {
     { path: "/home", label: "Home", icon: <FaHome size={20} /> },
     { path: "/students-create", label: "Students Create", icon: <FaUserGraduate size={20} /> },
     { path: "/students", label: "Students", icon: <FaUser size={20} /> },
-    { path: "/subjects", label: "Subjects", icon: <FaUser size={20} /> },
-    { path: "/book/:id", label: "book", icon: <FaUser size={20} /> },
+    { path: "/books", label: "Books", icon: <FaUser size={20} /> },
+    // { path: "/book/:id", label: "book", icon: <FaUser size={20} /> },
   ];
 
   return (

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import api from "../../api"; // Make sure this is correctly set up
+import React, { useState, useEffect } from "react";
+import api from "../../api";
 import { toast } from "react-toastify";
 
 const CreateSubjectModal = ({ onClose, onSubjectCreated }) => {
@@ -7,13 +7,21 @@ const CreateSubjectModal = ({ onClose, onSubjectCreated }) => {
   const [className, setClassName] = useState("");
   const [pdfFile, setPdfFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [filedata, setFileData] = useState();
+  const [userId, setUserId] = useState();
+
+  // ✅ Fetch user ID from localStorage on mount
+  debugger
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser?.id) {
+      setUserId(storedUser.id);
+    }
+  }, []);
 
   const handleUploadToCloudinary = async (file) => {
     const data = new FormData();
     data.append("file", file);
-    data.append("upload_preset", "ml_default"); // ✅ Replace with your Cloudinary preset
-    data.append("cloud_name", "subjects"); // ✅ Replace with your Cloudinary cloud name
+    data.append("upload_preset", "ml_default"); // Replace with your actual preset
 
     const res = await fetch(
       "https://api.cloudinary.com/v1_1/djt4kti0n/raw/upload",
@@ -24,9 +32,8 @@ const CreateSubjectModal = ({ onClose, onSubjectCreated }) => {
     );
 
     const result = await res.json();
-    setFileData(result)
-    console.log(filedata)
     console.log("Cloudinary upload result:", result);
+
     if (!result.secure_url || !result.public_id) {
       throw new Error("Cloudinary upload failed.");
     }
@@ -34,7 +41,6 @@ const CreateSubjectModal = ({ onClose, onSubjectCreated }) => {
     return result;
   };
 
-  // debugger
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,22 +51,19 @@ const CreateSubjectModal = ({ onClose, onSubjectCreated }) => {
 
     try {
       setIsLoading(true);
-      // Step 1: Upload PDF to Cloudinary
       const uploadResult = await handleUploadToCloudinary(pdfFile);
-      console.log(uploadResult)
 
-      // Step 2: Send data to your backend
       await api.post("/subjects/create", {
         subject_name: subjectName,
-        
         class_name: className,
-        pdf_url: uploadResult?.secure_url,
-        cloudinary_public_id: uploadResult?.public_id,
+        pdf_url: uploadResult.secure_url,
+        cloudinary_public_id: uploadResult.public_id,
+        user_id: userId,
       });
 
       toast.success("Subject created successfully!");
-      onSubjectCreated(); // Optional callback
-      onClose(); // Close modal
+      onSubjectCreated();
+      onClose();
     } catch (error) {
       console.error("Error creating subject:", error);
       toast.error("Failed to create subject.");

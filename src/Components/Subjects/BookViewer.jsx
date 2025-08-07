@@ -6,6 +6,8 @@ import { Howl } from "howler";
 import api from "../../api";
 import Lottie from "lottie-react";
 
+import { useNavigate } from "react-router-dom";
+
 // import 
 import Loading from "../../assets/Loading.json";
 // import Loading from ".."
@@ -22,6 +24,7 @@ const BookViewer = () => {
   const [numPages, setNumPages] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [bookSize, setBookSize] = useState({ width: 600, height: 920 });
+  const navigate=useNavigate()
 
   const pageTurnSoundRef = useRef(
     new Howl({
@@ -73,7 +76,19 @@ const BookViewer = () => {
   };
 
   return (
-    <div className=" h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+    < div className="h-screen">
+    <div className="p-4">
+  <button
+    onClick={() => navigate("/books")}
+    className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition duration-200"
+  >
+    Go to Books
+  </button>
+</div>
+
+    {/* </div> */}
+    <div className="  bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+      
       {pdfUrl ? (
         <Document
           file={pdfUrl}
@@ -82,12 +97,12 @@ const BookViewer = () => {
         >
           {numPages && (
             <HTMLFlipBook
-              width={600}
-              height={900}
+              width={500}
+              height={600}
               minWidth={600}
-              maxWidth={1000}
+              maxWidth={800}
               minHeight={400}
-              maxHeight={1536}
+              maxHeight={1036}
               size="stretch"
               showCover={true}
               mobileScrollSupport={true}
@@ -107,8 +122,8 @@ const BookViewer = () => {
                 >
                   <Page
                     pageNumber={index + 1}
-                    width={600}
-                    height={500}
+                    width={500}
+                    height={400}
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
                   />
@@ -128,6 +143,7 @@ const BookViewer = () => {
   title="PDF Preview"
 /> */}
 
+    </div>
     </div>
   );
 };
