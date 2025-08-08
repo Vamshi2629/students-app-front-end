@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaHome, FaUser, FaUserGraduate, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaUser, FaBook ,FaUserGraduate, FaSignOutAlt } from "react-icons/fa";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -11,9 +11,9 @@ const Sidebar = () => {
 
   const menuItems = [
     { path: "/home", label: "Home", icon: <FaHome size={20} /> },
-    { path: "/students-create", label: "Students Create", icon: <FaUserGraduate size={20} /> },
-    { path: "/students", label: "Students", icon: <FaUser size={20} /> },
-    { path: "/books", label: "Books", icon: <FaUser size={20} /> },
+    // { path: "/students-create", label: "Students Create", icon: <FaUserGraduate size={20} /> },
+    // { path: "/students", label: "Students", icon: <FaUser size={20} /> },
+    { path: "/books", label: "Books", icon: <FaBook  size={20} /> },
     // { path: "/book/:id", label: "book", icon: <FaUser size={20} /> },
   ];
 
