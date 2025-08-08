@@ -5,78 +5,77 @@ import { Document, Page, pdfjs } from "react-pdf";
 import { Howl } from "howler";
 import api from "../../api";
 import Lottie from "lottie-react";
-
+import Loading from "../../assets/Loading.json";
+// import { useNavigation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-// import 
-import Loading from "../../assets/Loading.json";
-// import Loading from ".."
-
-// Setup PDF worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// ✅ Use public CDN worker for react-pdf
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 const BookViewer = () => {
   const { id } = useParams();
   const [pdfUrl, setPdfUrl] = useState("");
   const [numPages, setNumPages] = useState(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [bookSize, setBookSize] = useState({ width: 600, height: 920 });
-  const navigate=useNavigate()
+  const pageTurnSoundRef = useRef(null);
+  const [bookSize, setBookSize] = useState({
+    width: window.innerWidth > 768 ? 600 : 300,
+    height: window.innerWidth > 768 ? 800 : 500,
+  });
+  const navigate = useNavigate()
 
-  const pageTurnSoundRef = useRef(
-    new Howl({
-      src: ["/page-flip.mp3"], // Should be in public/
-      preload: true,
-      html5: true,
-      volume: 1,
-    })
-  );
+  const isMobile = window.innerWidth <= 768;
 
-  // Detect screen size
   useEffect(() => {
-    const updateSize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      if (width < 768) {
-        setIsMobile(true);
-        setBookSize({ width: 300, height: 400 });
-      } else {
-        setIsMobile(false);
-        const calcWidth = Math.min(800, Math.floor(width * 0.8));
-        const calcHeight = Math.min(1000, Math.floor(height * 0.8));
-        setBookSize({ width: calcWidth, height: calcHeight });
-      }
-    };
-
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  // Fetch PDF
-  useEffect(() => {
-    const fetchSubject = async () => {
+    const fetchPdfUrl = async () => {
       try {
         const response = await api.get(`/subjects/${id}`);
         const url = response.data?.pdf_url;
-        setPdfUrl(url);
+        console.log("Fetched subject data:", response.data);
+        console.log("PDF URL:", url);
+
+        if (url) {
+          setPdfUrl(url);
+          // Test if the URL is accessible
+          const testResponse = await fetch(url, { method: 'HEAD' });
+          console.log("URL accessibility test:", testResponse.status);
+        } else {
+          console.error("No PDF URL found for this subject");
+        }
       } catch (error) {
-        console.error("Failed to load subject:", error);
+        console.error("Failed to load subject or PDF:", error);
       }
     };
-    fetchSubject();
+
+
+    fetchPdfUrl();
+
+    const handleResize = () => {
+      setBookSize({
+        width: window.innerWidth > 768 ? 600 : 300,
+        height: window.innerWidth > 768 ? 800 : 500,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [id]);
+
+  useEffect(() => {
+    pageTurnSoundRef.current = new Howl({
+      src: ["/page-flip.mp3"], // ✅ Ensure this sound file exists in public folder
+    });
+  }, []);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
 
+  const onDocumentLoadError = (error) => {
+    console.error("PDF load error:", error);
+  };
+
   return (
-    < div className="h-screen">
+      < div className="h-screen">
     <div className="p-4">
   <button
     onClick={() => navigate("/books")}
@@ -85,19 +84,19 @@ const BookViewer = () => {
     Go to Books
   </button>
 </div>
-
-    {/* </div> */}
-    <div className="  bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-      
+    <div className=" bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
       {pdfUrl ? (
         <Document
-          file={pdfUrl}
+          file={pdfUrl }
           onLoadSuccess={onDocumentLoadSuccess}
-          loading={<Lottie animationData={Loading} loop={true} className="w-72 mx-auto" />}
+          onLoadError={onDocumentLoadError}
+          loading={
+            <Lottie animationData={Loading} loop={true} className="w-72 mx-auto" />
+          }
         >
           {numPages && (
             <HTMLFlipBook
-              width={500}
+                     width={500}
               height={600}
               minWidth={600}
               maxWidth={800}
@@ -108,8 +107,10 @@ const BookViewer = () => {
               mobileScrollSupport={true}
               usePortrait={isMobile}
               onFlip={() => {
-                // Play sound only after user interaction
-                if (pageTurnSoundRef.current && typeof pageTurnSoundRef.current.play === "function") {
+                if (
+                  pageTurnSoundRef.current &&
+                  typeof pageTurnSoundRef.current.play === "function"
+                ) {
                   pageTurnSoundRef.current.play();
                 }
               }}
@@ -121,7 +122,7 @@ const BookViewer = () => {
                   className="page bg-white flex items-center justify-center"
                 >
                   <Page
-                    pageNumber={index + 1}
+                   pageNumber={index + 1}
                     width={500}
                     height={400}
                     renderTextLayer={false}
@@ -133,18 +134,10 @@ const BookViewer = () => {
           )}
         </Document>
       ) : (
-        <p className="text-gray-700 text-lg"><Lottie animationData={Loading} loop={true} className="w-72 mx-auto" /></p>
+        <Lottie animationData={Loading} loop={true} className="w-72 mx-auto" />
       )}
-
-      {/* <iframe
-  src="https://res.cloudinary.com/djt4kti0n/raw/upload/v1754307933/ResumeVamshi_toilzq.pdf"
-  width="100%"
-  height="600px"
-  title="PDF Preview"
-/> */}
-
     </div>
-    </div>
+     </div>
   );
 };
 
